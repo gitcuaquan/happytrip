@@ -6,8 +6,8 @@
         <UFormGroup label="Quyền truy cập">
           <USelect option-attribute="name" v-model="roleActive" :options="role" />
         </UFormGroup>
-        <UFormGroup label="Số điện thoại" name="email">
-          <UInput v-model="state.email" />
+        <UFormGroup label="Số điện thoại" name="phone">
+          <UInput v-model="state.phone" />
         </UFormGroup>
 
         <UFormGroup label="Mật khẩu" name="password">
@@ -16,7 +16,7 @@
 
         <div class="flex flex-col items-center justify-center">
           <div>
-            <UButton type="submit">
+            <UButton :loading="loading" type="submit">
               Đăng nhập
             </UButton>
           </div>
@@ -31,6 +31,9 @@
 <script lang="ts" setup>
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
+import { AuthService } from '~/services/AuthService';
+
+const authService = new AuthService()
 definePageMeta({
   layout: "blank",
 })
@@ -43,23 +46,38 @@ const role = [
   {
     name: "Cộng tác viên",
     value: "affilate"
-  }
+  },
+  {
+    name: "Quản trị viên",
+    value: "admin"
+  },
 ]
 const roleActive = ref("partner")
+const loading = ref(false)
+
 const schema = z.object({
-  email: z.string({ message: 'Vui lòng nhập số điện thoại' }).min(9, 'Hãy nhập đúng số điện thoại'),
+  phone: z.string({ message: 'Vui lòng nhập số điện thoại' }).min(9, 'Hãy nhập đúng số điện thoại'),
   password: z.string({ message: "Vui lòng nhập mật khẩu" }).min(6, 'Mật khẩu tối thiểu 6 kí tự')
 })
 
 type Schema = z.output<typeof schema>
 
 const state = reactive({
-  email: undefined,
+  phone: undefined,
   password: undefined
 })
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  // Do something with data
-  console.log(event.data)
+  loading.value = true
+  try {
+    const res = await authService.login(roleActive.value, event.data)
+    console.log("🚀 ~ onSubmit ~ res:", res)
+
+  } catch (e) {
+    console.log("Lỗi", e)
+  } finally {
+    loading.value = false
+  }
+
 }
 </script>
 
