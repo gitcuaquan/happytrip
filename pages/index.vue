@@ -9,6 +9,10 @@
 <script lang="ts" setup>
 
 
+definePageMeta({
+  middleware:['auth']
+})
+
 const page = ref(1)
 const items = ref(Array(55))
 const people = [{

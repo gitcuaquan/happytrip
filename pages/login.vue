@@ -70,8 +70,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true
   try {
     const res = await authService.login(roleActive.value, event.data)
-    console.log("🚀 ~ onSubmit ~ res:", res)
-
+    const token = useCookie("accessToken")
+    const user = useCookie("user")
+    token.value = res.accessToken
+    user.value = JSON.stringify(res)
   } catch (e) {
     console.log("Lỗi", e)
   } finally {

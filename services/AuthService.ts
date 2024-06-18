@@ -11,9 +11,7 @@ export interface AuthResponse {
     transportType: string;
 }
 export class AuthService {
-    constructor() {
-
-    }
+    constructor() {}
 
     async login(role: string, user: User) {
         const token = await $fetch<AuthResponse>(`${BASE_URL}/${role}/login`, {
