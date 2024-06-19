@@ -74,6 +74,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     const user = useCookie("user")
     token.value = res.accessToken
     user.value = JSON.stringify(res)
+    navigateTo('/')
   } catch (e) {
     console.log("Lỗi", e)
   } finally {
