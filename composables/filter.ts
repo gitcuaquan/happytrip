@@ -5,7 +5,7 @@ export const useFilter = () => {
   const parameters: Partial<Parameters> = reactive({
     page: 1,
     limit: 10,
-    sort_by: ""
+    sort_by: "",
   })
 
 

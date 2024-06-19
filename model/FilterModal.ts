@@ -2,6 +2,7 @@ export interface Parameters {
     page: number,
     limit: number,
     sort_by: string,
+    fields:string
 }
 export interface BodyFilter {
     keyword: string;
