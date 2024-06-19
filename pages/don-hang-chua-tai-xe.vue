@@ -26,8 +26,8 @@
       </UTable>
    </div>
    <div class="flex">
-      <UPagination :page-count="10"  v-model="parameters.page" class="mt-5 ms-auto me-10"
-         :total="listOrder?.pagination?.count" />
+      <UPagination :page-count="10" v-model="parameters.page" class="mt-5 ms-auto me-10"
+         :total="listOrder?.pagination?.count ?? 1" />
    </div>
 </template>
 
@@ -89,6 +89,8 @@ async function ListOrder(parameters: Partial<Pagination>, bodyFilter: Partial<Bo
 </script>
 
 <style>
+
+
 @media (min-width: 768px) {
    .table-responsive {
       width: calc(100vw - 290px);
