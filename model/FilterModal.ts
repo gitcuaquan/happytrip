@@ -23,7 +23,7 @@ export interface BodyFilter {
     district_depature: string;
     district_destination: string;
     partner_ids: string[];
-    order_expired: boolean;
+    order_expired?: boolean;
 }
 
 export interface Pagination {

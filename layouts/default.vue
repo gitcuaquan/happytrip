@@ -102,19 +102,20 @@ const menu = ref([
     role: [ROLE.PARTNER],
     childern: [
       {
-        label: "Chờ tài xế",
+        label: "Đơn đã nhận",
+        icon: "i-heroicons-clipboard",
+        to:"don-da-nhan"
+      },
+      {
+        label: "Đã đã hoàn thành",
         icon: "i-heroicons-clipboard"
       },
       {
-        label: "Đã nhận đơn",
+        label: "Đơn đã hủy",
         icon: "i-heroicons-clipboard"
       },
       {
-        label: "Hủy chuyến",
-        icon: "i-heroicons-clipboard"
-      },
-      {
-        label: "Lệnh hủy chuyến",
+        label: "Lệnh chờ hủy",
         icon: "i-heroicons-clipboard"
       }
     ]
