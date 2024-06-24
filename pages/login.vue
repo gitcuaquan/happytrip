@@ -1,4 +1,5 @@
 <template>
+  <UNotifications />
   <div class="w-full bg-custom h-screen flex justify-center items-center">
     <div class="w-96 bg-white shadow p-4 rounded">
       <img src="https://happytrip.vn/img/logohpt.png" class="mx-auto my-2" width="150" alt="">
@@ -20,7 +21,6 @@
               Đăng nhập
             </UButton>
           </div>
-
           <img src="/assets/images/driver-cuate.svg" class="w-80" alt="">
         </div>
       </UForm>
@@ -32,7 +32,7 @@
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 import { AuthService } from '~/services/AuthService';
-
+const toast = useToast()
 const authService = new AuthService()
 definePageMeta({
   layout: "blank",
@@ -77,6 +77,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     navigateTo('/')
   } catch (e) {
     console.log("Lỗi", e)
+    toast.add({ title: 'Đăng nhập thất bại, kiểm tra lại',color:"red",icon:"i-ic-round-error-outline" })
   } finally {
     loading.value = false
   }

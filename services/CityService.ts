@@ -3,7 +3,8 @@ import type { BodyFilter, Parameters } from "~/model/FilterModal";
 export interface City {
     id: string
     name: string
-    code: string
+    code: string,
+    status:boolean
 }
 
 export interface District {

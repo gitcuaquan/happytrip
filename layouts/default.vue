@@ -165,81 +165,105 @@ const thisMenu = computed(() => menu.value.filter(item => item.role?.includes(th
 <template>
   <USlideover v-model="isOpen">
     <UCard class="flex flex-col flex-1"
-      :ui="{ body: { base: 'flex-1' }, ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+           :ui="{ body: { base: 'flex-1' }, ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
       <template #header>
         <UButton color="gray" variant="ghost" size="sm" icon="i-heroicons-x-mark-20-solid"
-          class="flex sm:hidden absolute end-2 top-3 z-10" square padded @click="isOpen = false" />
+                 class="flex sm:hidden absolute end-2 top-3 z-10" square padded @click="isOpen = false"/>
         <img src="https://happytrip.vn/img/logohpt.png" class="me-auto" width="150" alt="">
       </template>
 
       <div class=" flex flex-col">
         <template v-for="item in menu1">
           <UButton v-if="item?.role?.includes(thisRole)" :label="item.label" :icon="item.icon" :to="item.to"
-            variant="ghost"></UButton>
+                   variant="ghost"></UButton>
         </template>
         <UAccordion default-open multiple color="black" :items="thisMenu" variant="ghost">
           <template #default="{ item, index, open }">
             <UButton variant="ghost" :to="item.to">
               <template #leading>
-                <UIcon :name="item.icon" class="w-5 h-5" dynamic />
+                <UIcon :name="item.icon" class="w-5 h-5" dynamic/>
               </template>
               {{ item.label }}
               <template #trailing>
                 <UIcon v-if="item.childern" name="i-heroicons-chevron-right-20-solid"
-                  class="w-5 h-5 ms-auto transform transition-transform duration-200" :class="[open && 'rotate-90']" />
+                       class="w-5 h-5 ms-auto transform transition-transform duration-200"
+                       :class="[open && 'rotate-90']"/>
               </template>
             </UButton>
           </template>
           <template #item="{ item }">
-            <UVerticalNavigation class="ms-3" :links="item.childern" />
+            <UVerticalNavigation class="ms-3" :links="item.childern"/>
           </template>
         </UAccordion>
       </div>
     </UCard>
   </USlideover>
-  <div class="flex">
-    <div style="min-width: 250px;" class=" sticky top-0 md:flex hidden flex-col overflow-auto h-screen border-e-2">
+  <div class="grid-container">
+    <header style="z-index: 9;" class="bg-white header shadow-sm sticky flex top-0 w-full px-2 py-2">
+      <UButton @click="isOpen = true" class="md:hidden" variant="outline">
+        <u-icon name="i-ic-outline-menu" class="text-xl" dynamic></u-icon>
+      </UButton>
+      <img src="https://happytrip.vn/img/logohpt.png" class="mx-auto md:hidden my-2" width="150" alt="">
+      <UPopover mode="hover" class="md:ms-auto">
+        <UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4"></UAvatar>
+        <template #panel="{ close }">
+          <div class="p-3 ">
+            {{ user.fullName }}
+          </div>
+        </template>
+      </UPopover>
+    </header>
+    <div style="min-width: 250px;"
+         class=" sticky  menu top-0 md:flex hidden flex-col overflow-auto h-screen border-e-2">
       <img src="https://happytrip.vn/img/logohpt.png" class="mx-auto my-2" width="150" alt="">
       <template v-for="item in menu1">
         <UButton v-if="item?.role?.includes(thisRole)" :label="item.label" :icon="item.icon" :to="item.to"
-          variant="ghost"></UButton>
+                 variant="ghost"></UButton>
       </template>
       <UAccordion default-open multiple color="black" :items="thisMenu" variant="ghost">
         <template #default="{ item, index, open }">
           <UButton variant="ghost" :to="item.to">
             <template #leading>
-              <UIcon :name="item.icon" class="w-5 h-5" dynamic />
+              <UIcon :name="item.icon" class="w-5 h-5" dynamic/>
             </template>
             {{ item.label }}
             <template #trailing>
               <UIcon v-if="item.childern" name="i-heroicons-chevron-right-20-solid"
-                class="w-5 h-5 ms-auto transform transition-transform duration-200" :class="[open && 'rotate-90']" />
+                     class="w-5 h-5 ms-auto transform transition-transform duration-200"
+                     :class="[open && 'rotate-90']"/>
             </template>
           </UButton>
         </template>
         <template #item="{ item }">
-          <UVerticalNavigation class="ms-3" :links="item.childern" />
+          <UVerticalNavigation class="ms-3" :links="item.childern"/>
         </template>
       </UAccordion>
     </div>
-    <div class="w-full">
-      <header style="z-index: 9;" class="bg-white shadow-sm sticky flex top-0 w-full px-2 py-2">
-        <UButton @click="isOpen = true" class="md:hidden" variant="outline">
-          <u-icon name="i-ic-outline-menu" class="text-xl" dynamic></u-icon>
-        </UButton>
-        <img src="https://happytrip.vn/img/logohpt.png" class="mx-auto md:hidden my-2" width="150" alt="">
-        <UPopover mode="hover" class="md:ms-auto">
-          <UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4"></UAvatar>
-          <template #panel="{ close }">
-            <div class="p-3 ">
-              {{ user.fullName }}
-            </div>
-          </template>
-        </UPopover>
-      </header>
-      <div class="p-2">
+    <div class="main p-3">
         <slot></slot>
-      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.header {
+  grid-area: header;
+}
+
+.menu {
+  grid-area: menu;
+}
+
+.main {
+  grid-area: main;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: auto 1fr 1fr 1fr;
+  grid-template-areas:
+    'menu header header header'
+    'menu main main main'
+}
+</style>
