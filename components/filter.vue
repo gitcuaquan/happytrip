@@ -4,7 +4,7 @@
             class="sm:w-44 min-w-44 w-80" color="white"
             :trailing="false" placeholder="Tìm kiếm từ khóa..."/>
     <UDivider orientation="vertical" class="h-7 hidden sm:block"/>
-    <UButton @click="isOpen = true" class="ms-auto flex items-center p-2 sm:hidden">
+    <UButton @click="isOpen = true" color="black" variant="solid" class="ms-auto flex items-center p-2 sm:hidden">
       <UIcon name="i-bi-sliders" dynamic/>
     </UButton>
     <UBadge size="md" color="white" class="text-nowrap hidden sm:block" variant="soft">Điểm đón</UBadge>

@@ -68,7 +68,7 @@ watchEffect(async () => {
 
 function initFilter() {
   bodyFilter.partner_id = user.value.id
-  bodyFilter.order_status = 1
+  bodyFilter.order_status = 2
 }
 
 async function ListOrder(parameters: Partial<Pagination>, bodyFilter: Partial<BodyFilter>) {

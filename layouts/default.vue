@@ -104,15 +104,17 @@ const menu = ref([
       {
         label: "Đơn đã nhận",
         icon: "i-heroicons-clipboard",
-        to:"don-da-nhan"
+        to:"/don-da-nhan"
       },
       {
         label: "Đã đã hoàn thành",
-        icon: "i-heroicons-clipboard"
+        icon: "i-heroicons-clipboard",
+        to:"/don-da-nhan/success"
       },
       {
         label: "Đơn đã hủy",
-        icon: "i-heroicons-clipboard"
+        icon: "i-heroicons-clipboard",
+        to:"/don-da-nhan/cancel"
       },
       {
         label: "Lệnh chờ hủy",

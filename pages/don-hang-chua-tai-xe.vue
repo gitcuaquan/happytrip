@@ -89,8 +89,8 @@
         <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
         {{ Object.values(item?.destination)?.join(" - ") }}
       </div>
-      <div class="flex items-start font-semibold gap-2" v-if="item?.note">
-        <UIcon name="i-hugeicons-note-03" class="text-indigo-400"/>
+      <div class="flex items-center  font-semibold gap-2" v-if="item?.note">
+        <UIcon name="i-fluent-comment-note-20-filled" class="text-indigo-400"/>
         "{{ item?.note }}"
       </div>
     </UCard>
@@ -192,6 +192,7 @@ async function onChangeFilter(value: BodyFilter) {
 }
 
 async function ListOrder(parameters: Partial<Pagination>, bodyFilter: Partial<BodyFilter>) {
+   listOrder.value = []
   listOrder.value = await orderService.getOrders(parameters, bodyFilter)
 }
 
