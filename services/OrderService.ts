@@ -56,4 +56,67 @@ export class OrderService {
         })
         return orders
     }
+
+    async getOrdersCancelAsync(parameters?: Partial<Parameters>, bodyFilter?: Partial<BodyFilter>) {
+        const orders = await $fetch<{
+            pagination: Pagination,
+            data: Booking[]
+        }>(`${BASE_URL}/order_cancel/accept-list`, {
+            headers: {
+                Authorization: this.token
+            },
+            method: "POST",
+            params: parameters,
+            body: bodyFilter
+        })
+        return orders
+    }
+
+    acceptAsync(id: string) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const respone = await $fetch(`${BASE_URL}/order/${id}/accept`, {
+                    method: "PUT",
+                    headers: {
+                        Authorization: this.token
+                    },
+                })
+                resolve(respone)
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
+
+    completeAsync(id: string) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const respone = await $fetch(`${BASE_URL}/order/${id}/complete`, {
+                    method: "PUT",
+                    headers: {
+                        Authorization: this.token
+                    },
+                })
+                resolve(respone)
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
+
+    cancelAsync(id: string) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const respone = await $fetch(`${BASE_URL}/order/${id}/cancel`, {
+                    method: "PUT",
+                    headers: {
+                        Authorization: this.token
+                    },
+                })
+                resolve(respone)
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
 }

@@ -38,18 +38,13 @@ const columns = [
     key: 'name_service',
     label: 'Dịch vụ'
   },
-
   {
-    key: 'departure',
-    label: 'Điểm đón - Điểm trả'
+    key: 'name_service',
+    label: 'Đối tượng hủy'
   },
   {
     key: 'status',
     label: 'Trạng thái'
-  },
-  {
-    key: 'price_sys',
-    label: "Cước thu"
   },
   {
     key: 'action',
@@ -68,11 +63,12 @@ watchEffect(async () => {
 
 function initFilter() {
   bodyFilter.partner_id = user.value.id
-  bodyFilter.order_status = 1
+  parameters.fields = 'id,short_id,order_short_id,order_id,type_value,customer,status_value,departure,destination,name_service,date_of_destination'
+  bodyFilter.order_status = 2
 }
 
 async function ListOrder(parameters: Partial<Pagination>, bodyFilter: Partial<BodyFilter>) {
-  listOrder.value = await orderService.getOrders(parameters, bodyFilter)
+  listOrder.value = await orderService.getOrdersCancelAsync(parameters, bodyFilter)
 }
 
 async function onChangeFilter(value: BodyFilter) {
@@ -119,11 +115,12 @@ async function onChangeFilter(value: BodyFilter) {
       {{ convertUTCToLocal(row?.date_of_destination) }}
     </template>
     <template #price_sys-data="{ row }">
+
       {{ VND(row?.price_guest) }}
     </template>
     <template #status-data="{ row }">
-      <UBadge color="green" variant="subtle">
-        Đã nhận
+      <UBadge color="red" variant="subtle">
+        Đã Hủy
       </UBadge>
     </template>
     <template #action-data="{ row }">
@@ -167,8 +164,8 @@ async function onChangeFilter(value: BodyFilter) {
       <div class="flex border rounded justify-center text-slate font-bold items-center p-2 gap-2 my-3">
         <UIcon name="i-hugeicons-car-04" class="text-xl" />
         {{ item.name_service }}
-        <UBadge color="green" variant="subtle">
-          Đã nhận
+        <UBadge color="red" variant="subtle">
+          Đã hủy
         </UBadge>
       </div>
       <div class="flex items-center gap-2">

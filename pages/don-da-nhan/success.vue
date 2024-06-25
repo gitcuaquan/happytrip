@@ -123,7 +123,7 @@ async function onChangeFilter(value: BodyFilter) {
     </template>
     <template #status-data="{ row }">
       <UBadge color="green" variant="subtle">
-        Đã nhận
+       Đã Hoàn Thành
       </UBadge>
     </template>
     <template #action-data="{ row }">
@@ -168,7 +168,7 @@ async function onChangeFilter(value: BodyFilter) {
         <UIcon name="i-hugeicons-car-04" class="text-xl" />
         {{ item.name_service }}
         <UBadge color="green" variant="subtle">
-          Đã nhận
+          Đã Hoàn Thành
         </UBadge>
       </div>
       <div class="flex items-center gap-2">
