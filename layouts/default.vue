@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const route = useRoute()
 
 const ROLE = {
   ADMIN: 'admin',
@@ -7,6 +8,10 @@ const ROLE = {
 }
 const user = useUser();
 const thisRole = ref(user.value.tokenType.toLowerCase())
+watch(() => route.fullPath, () => {
+  isOpen.value = false
+
+});
 
 const menu1 = [
   {
@@ -104,17 +109,17 @@ const menu = ref([
       {
         label: "Đơn đã nhận",
         icon: "i-heroicons-clipboard",
-        to:"/don-da-nhan"
+        to: "/don-da-nhan"
       },
       {
         label: "Đã đã hoàn thành",
         icon: "i-heroicons-clipboard",
-        to:"/don-da-nhan/success"
+        to: "/don-da-nhan/success"
       },
       {
         label: "Đơn đã hủy",
         icon: "i-heroicons-clipboard",
-        to:"/don-da-nhan/cancel"
+        to: "/don-da-nhan/cancel"
       },
       {
         label: "Lệnh chờ hủy",
@@ -168,34 +173,33 @@ const thisMenu = computed(() => menu.value.filter(item => item.role?.includes(th
 <template>
   <USlideover v-model="isOpen">
     <UCard class="flex flex-col flex-1"
-           :ui="{ body: { base: 'flex-1' }, ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+      :ui="{ body: { base: 'flex-1' }, ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
       <template #header>
         <UButton color="gray" variant="ghost" size="sm" icon="i-heroicons-x-mark-20-solid"
-                 class="flex sm:hidden absolute end-2 top-3 z-10" square padded @click="isOpen = false"/>
+          class="flex sm:hidden absolute end-2 top-3 z-10" square padded @click="isOpen = false" />
         <img src="https://happytrip.vn/img/logohpt.png" class="me-auto" width="150" alt="">
       </template>
 
       <div class=" flex flex-col">
         <template v-for="item in menu1">
           <UButton v-if="item?.role?.includes(thisRole)" :label="item.label" :icon="item.icon" :to="item.to"
-                   variant="ghost"></UButton>
+            variant="ghost"></UButton>
         </template>
         <UAccordion default-open multiple color="black" :items="thisMenu" variant="ghost">
           <template #default="{ item, index, open }">
             <UButton variant="ghost" :to="item.to">
               <template #leading>
-                <UIcon :name="item.icon" class="w-5 h-5" dynamic/>
+                <UIcon :name="item.icon" class="w-5 h-5" dynamic />
               </template>
               {{ item.label }}
               <template #trailing>
                 <UIcon v-if="item.childern" name="i-heroicons-chevron-right-20-solid"
-                       class="w-5 h-5 ms-auto transform transition-transform duration-200"
-                       :class="[open && 'rotate-90']"/>
+                  class="w-5 h-5 ms-auto transform transition-transform duration-200" :class="[open && 'rotate-90']" />
               </template>
             </UButton>
           </template>
           <template #item="{ item }">
-            <UVerticalNavigation class="ms-3" :links="item.childern"/>
+            <UVerticalNavigation class="ms-3" :links="item.childern" />
           </template>
         </UAccordion>
       </div>
@@ -217,33 +221,32 @@ const thisMenu = computed(() => menu.value.filter(item => item.role?.includes(th
       </UPopover>
     </header>
     <div style="min-width: 250px;"
-         class=" sticky  menu top-0 md:flex hidden flex-col overflow-auto h-screen border-e-2">
+      class=" sticky  menu top-0 md:flex hidden flex-col overflow-auto h-screen border-e-2">
       <img src="https://happytrip.vn/img/logohpt.png" class="mx-auto my-2" width="150" alt="">
       <template v-for="item in menu1">
         <UButton v-if="item?.role?.includes(thisRole)" :label="item.label" :icon="item.icon" :to="item.to"
-                 variant="ghost"></UButton>
+          variant="ghost"></UButton>
       </template>
       <UAccordion default-open multiple color="black" :items="thisMenu" variant="ghost">
         <template #default="{ item, index, open }">
           <UButton variant="ghost" :to="item.to">
             <template #leading>
-              <UIcon :name="item.icon" class="w-5 h-5" dynamic/>
+              <UIcon :name="item.icon" class="w-5 h-5" dynamic />
             </template>
             {{ item.label }}
             <template #trailing>
               <UIcon v-if="item.childern" name="i-heroicons-chevron-right-20-solid"
-                     class="w-5 h-5 ms-auto transform transition-transform duration-200"
-                     :class="[open && 'rotate-90']"/>
+                class="w-5 h-5 ms-auto transform transition-transform duration-200" :class="[open && 'rotate-90']" />
             </template>
           </UButton>
         </template>
         <template #item="{ item }">
-          <UVerticalNavigation class="ms-3" :links="item.childern"/>
+          <UVerticalNavigation class="ms-3" :links="item.childern" />
         </template>
       </UAccordion>
     </div>
     <div class="main p-3">
-        <slot></slot>
+      <slot></slot>
     </div>
   </div>
 </template>

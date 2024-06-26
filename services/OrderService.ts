@@ -7,13 +7,13 @@ export interface Booking {
     name_service: string;
     departure: {
         address_1: string;
-        city: string;
         district: string;
+        city: string;
     };
     destination: {
         address_1: string;
-        city: string;
         district: string;
+        city: string;
     };
     date_of_destination: string;
     quantity: number;
