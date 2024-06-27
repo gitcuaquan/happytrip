@@ -16,12 +16,16 @@
         <a class="flex hover:text-primary items-center gap-2" target="_blank"
           :href="`https://www.google.com/maps/search/${Object.values(row?.destination)?.join('-')}`">
           <UIcon name="i-wpf-geo-fence" class="text-red-500" />
+        </div>
+        <div class="flex items-center gap-2">
+          <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
           {{ Object.values(row?.destination)?.join(" - ") }}
-        </a>
+        </div>
         <div class="flex items-center font-semibold gap-2" v-if="row?.note">
           <UIcon name="i-hugeicons-note-03" class="text-indigo-400" />
           "{{ row?.note }}"
         </div>
+
       </div>
     </template>
     <template #date_of_destination-data="{ row }">
@@ -44,47 +48,62 @@
 
     </template>
     <template #action-data="{ row }">
-      <UButton @click="acceptAsync(row.id)">Nhận chuyến</UButton>
+      <UButton>Nhận chuyến</UButton>
     </template>
   </UTable>
   <div class="block mt-2 md:hidden">
     <UCard v-for="item in listOrder?.data" class="mb-3">
-      <div class="flex items-start mb-1">
-        <div class="flex flex-col  gap-1">
+      <div class="flex">
+        <div class="flex flex-col gap-2 my-3">
           <div class="flex font-bold gap-2">
-            <UBadge color="sky" class="text-center w-20 block  text-nowrap" variant="subtle">Tài xế thu</UBadge>
+            <UBadge color="sky" class="justify-center w-20" variant="subtle">Tài xế thu</UBadge>
             {{ VND(item?.price_guest) }}
           </div>
           <div class="flex font-bold  gap-2">
-            <UBadge color="green" class="text-center w-20 block text-nowrap" variant="subtle">Tài xế nhận</UBadge>
+            <UBadge color="green" class="justify-center w-20" variant="subtle">Tài xế nhận</UBadge>
             {{ VND(item?.price) }}
           </div>
         </div>
-        <div class="ms-auto">
-          <UButton @click="acceptAsync(item.id)" class="ms-auto">Nhận chuyến</UButton>
+        <div class="ms-auto my-auto">
+          <UButton class="ms-auto">Nhận chuyến</UButton>
         </div>
       </div>
-      <div class="flex gap-1 flex-col">
-        <div class="font-bold flex items-center gap-2 text-gray-600">
-          <UBadge class="text-center w-20 block  text-nowrap" variant="subtle">Dịch vụ</UBadge>
-          {{ item.name_service }}
+      <UDivider label="Thông tin dịch vụ"/>
+      <div class="flex items-center my-2 gap-2">
+        <div class="p-3 border bg-primary-100 border-primary flex items-center justify-center rounded-full">
+          <UIcon name="i-ion-car-sport-sharp" class="text-primary text-3xl"/>
         </div>
-        <div class=" font-bold  flex items-center gap-2 text-gray-600">
-          <UBadge class="text-center w-20 block text-nowrap" variant="subtle">Khởi hành</UBadge>{{
-            convertUTCToLocal(item?.date_of_destination) }}
+        <div class="flex flex-col">
+          <div class="font-bold text-gray-600">
+            {{ item.name_service }}
+          </div>
+          <div>
+            {{ convertUTCToLocal(item?.date_of_destination) }}
+          </div>
         </div>
       </div>
-      <div class="flex items-center my-1 gap-2">
-        <UIcon name="i-wpf-geo-fence" class="text-green-500" />
-        {{[item?.departure.address_1,item?.departure.district,item?.departure.city]?.join(" - ") }}
+      <UDivider label="Thông tin địa điểm"/>
+      <div class="flex items-center my-2 gap-2">
+        <UIcon name="i-wpf-geo-fence" class="text-green-500"/>
+        {{ Object.values(item?.departure)?.join(" - ") }}
       </div>
       <div class="flex items-start gap-2">
-        <UIcon name="i-wpf-geo-fence" class="text-red-500" />
-        {{ Object.values([item?.departure.address_1,item?.departure.district,item?.departure.city])?.join(" - ") }}
+        <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
+        {{ Object.values(item?.destination)?.join(" - ") }}
       </div>
-      <div class="flex items-center  font-semibold gap-2" v-if="item?.note">
-        <UIcon name="i-fluent-comment-note-20-filled" class="text-indigo-400" />
+      <div class="flex items-start font-semibold gap-2" v-if="item?.note">
+        <UIcon name="i-hugeicons-note-03" class="text-indigo-400"/>
         "{{ item?.note }}"
+      </div>
+      <div class="flex flex-wrap mt-3 gap-2">
+        <div class="flex gap-2">
+          <UBadge color="sky" variant="subtle">Tài xế thu</UBadge>
+          {{ VND(item?.price_guest) }}
+        </div>
+        <div class="flex ms-auto gap-2">
+          <UBadge color="green"  variant="subtle">Tài xế nhận</UBadge>
+          {{ VND(item?.price) }}
+        </div>
       </div>
     </UCard>
   </div>

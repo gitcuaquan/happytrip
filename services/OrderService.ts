@@ -1,4 +1,4 @@
-import type {BodyFilter, Pagination, Parameters} from "~/model/FilterModal"
+import type { BodyFilter, Pagination, Parameters } from "~/model/FilterModal"
 
 export interface Booking {
     id: string;
@@ -39,7 +39,6 @@ export interface Booking {
 
 export class OrderService {
     private token: string
-
     constructor() {
         const token = useCookie('accessToken')
         this.token = `Bearer ${token.value}`

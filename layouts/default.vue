@@ -122,7 +122,11 @@ const menu = ref([
         to: "/don-da-nhan/cancel"
       },
       {
-        label: "Lệnh chờ hủy",
+        label: "Hủy chuyến",
+        icon: "i-heroicons-clipboard"
+      },
+      {
+        label: "Lệnh hủy chuyến",
         icon: "i-heroicons-clipboard"
       }
     ]
