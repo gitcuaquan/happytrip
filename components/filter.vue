@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center md:flex-wrap p-2  border rounded gap-2">
+  <div class="flex items-center md:flex-wrap p-2  border rounded-md rounded gap-2">
     <UInput v-model="keyword" icon="i-heroicons-magnifying-glass-20-solid" size="sm"
             class="sm:w-44 min-w-44 w-80" color="white"
             :trailing="false" placeholder="Tìm kiếm từ khóa..."/>

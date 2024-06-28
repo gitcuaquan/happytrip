@@ -9,23 +9,18 @@
     <template #departure-data="{ row }">
       <div class="flex flex-col">
         <a class="flex hover:text-primary items-center gap-2" target="_blank"
-          :href="`https://www.google.com/maps/search/${Object.values(row?.departure)?.join('-')}`">
-          <UIcon name="i-wpf-geo-fence" class="text-green-500" />
-          {{ Object.values(row?.departure)?.join(" - ") }}
-        </a>
-        <a class="flex hover:text-primary items-center gap-2" target="_blank"
-          :href="`https://www.google.com/maps/search/${Object.values(row?.destination)?.join('-')}`">
+          :href="`https://www.google.com/maps/search/${[row?.departure.address_1, row?.departure.district, row?.departure.city]?.join('-')}`">
           <UIcon name="i-wpf-geo-fence" class="text-red-500" />
-        </div>
-        <div class="flex items-center gap-2">
-          <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
-          {{ Object.values(row?.destination)?.join(" - ") }}
-        </div>
-        <div class="flex items-center font-semibold gap-2" v-if="row?.note">
-          <UIcon name="i-hugeicons-note-03" class="text-indigo-400" />
-          "{{ row?.note }}"
-        </div>
-
+          {{ [row?.departure.address_1, row?.departure.district, row?.departure.city]?.join(" - ") }}
+        </a>
+      </div>
+      <div class="flex items-center gap-2">
+        <UIcon name="i-wpf-geo-fence" class="text-green-500" />
+        {{ [row?.destination.address_1, row?.destination.district, row?.destination.city]?.join(" - ") }}
+      </div>
+      <div class="flex items-center font-semibold gap-2" v-if="row?.note">
+        <UIcon name="i-hugeicons-note-03" class="text-indigo-400" />
+        "{{ row?.note }}"
       </div>
     </template>
     <template #date_of_destination-data="{ row }">
@@ -37,41 +32,42 @@
     <template #price_sys-data="{ row }">
       <div class="flex flex-col gap-2">
         <div class="flex gap-2">
-          <UBadge color="sky" class="w-20 text-nowrap" variant="subtle">Tài xế thu</UBadge>
+          <UBadge color="cyan" class="w-20 text-nowrap" variant="subtle">Tài xế thu</UBadge>
           {{ VND(row?.price_guest) }}
         </div>
         <div class="flex gap-2">
-          <UBadge color="green" class="w-20 text-nowrap" variant="subtle">Tài xế nhận</UBadge>
+          <UBadge color="amber" class="w-20 text-nowrap" variant="subtle">Tài xế nhận</UBadge>
           {{ VND(row?.price) }}
         </div>
       </div>
 
     </template>
     <template #action-data="{ row }">
-      <UButton>Nhận chuyến</UButton>
+      <UButton icon="i-mdi-car-arrow-left" :loading="loadingNhanDon == row.id" @click="acceptAsync(row?.id)">Nhận chuyến
+      </UButton>
     </template>
   </UTable>
   <div class="block mt-2 md:hidden">
     <UCard v-for="item in listOrder?.data" class="mb-3">
-      <div class="flex">
-        <div class="flex flex-col gap-2 my-3">
+      <div class="flex items-start">
+        <div class="flex flex-col gap-2">
           <div class="flex font-bold gap-2">
-            <UBadge color="sky" class="justify-center w-20" variant="subtle">Tài xế thu</UBadge>
+            <UBadge color="cyan" class="w-20 text-nowrap" variant="subtle">Tài xế thu</UBadge>
             {{ VND(item?.price_guest) }}
           </div>
           <div class="flex font-bold  gap-2">
-            <UBadge color="green" class="justify-center w-20" variant="subtle">Tài xế nhận</UBadge>
+            <UBadge color="amber" class="w-20 text-nowrap" variant="subtle">Tài xế nhận</UBadge>
             {{ VND(item?.price) }}
           </div>
         </div>
-        <div class="ms-auto my-auto">
-          <UButton class="ms-auto">Nhận chuyến</UButton>
+        <div class="ms-auto">
+          <UButton icon="i-mdi-car-arrow-left" :loading="loadingNhanDon == item.id" @click="acceptAsync(item?.id)"
+            class="ms-auto">Nhận chuyến</UButton>
         </div>
       </div>
-      <UDivider label="Thông tin dịch vụ"/>
-      <div class="flex items-center my-2 gap-2">
-        <div class="p-3 border bg-primary-100 border-primary flex items-center justify-center rounded-full">
-          <UIcon name="i-ion-car-sport-sharp" class="text-primary text-3xl"/>
+      <div class="flex items-center mt-1 gap-2">
+        <div class="p-2 border bg-primary-100 border-primary flex items-center justify-center rounded">
+          <UIcon name="i-ion-car-sport-sharp" class="text-primary text-md" />
         </div>
         <div class="flex flex-col">
           <div class="font-bold text-gray-600">
@@ -82,28 +78,25 @@
           </div>
         </div>
       </div>
-      <UDivider label="Thông tin địa điểm"/>
-      <div class="flex items-center my-2 gap-2">
-        <UIcon name="i-wpf-geo-fence" class="text-green-500"/>
-        {{ Object.values(item?.departure)?.join(" - ") }}
-      </div>
-      <div class="flex items-start gap-2">
-        <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
-        {{ Object.values(item?.destination)?.join(" - ") }}
-      </div>
-      <div class="flex items-start font-semibold gap-2" v-if="item?.note">
-        <UIcon name="i-hugeicons-note-03" class="text-indigo-400"/>
+      <a target="_blank" :href="`https://www.google.com/maps/search/${[item?.departure.address_1, item?.departure.district, item?.departure.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
+        <div class="py-1 px-2 my-auto border border-green-500 rounded bg-green-100">
+          <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md" />
+        </div>
+        <div>
+          {{ [item?.departure.address_1, item?.departure.district, item?.departure.city]?.join(" - ") }}
+        </div>
+      </a>
+      <a target="_blank":href="`https://www.google.com/maps/search/${[item?.destination.address_1, item?.destination.district, item?.destination.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
+        <div class="py-1 px-2 my-auto border border-red-500 rounded bg-red-100">
+          <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md" />
+        </div>
+        {{ [item?.destination.address_1, item?.destination.district, item?.destination.city]?.join(" - ") }}
+      </a>
+      <div class="flex mt-1 items-center gap-2" v-if="item?.note">
+        <div class="py-1 px-2 border border-indigo-500 rounded bg-indigo-100">
+          <UIcon name="i-hugeicons-note-03" class="text-indigo-500 text-md" />
+        </div>
         "{{ item?.note }}"
-      </div>
-      <div class="flex flex-wrap mt-3 gap-2">
-        <div class="flex gap-2">
-          <UBadge color="sky" variant="subtle">Tài xế thu</UBadge>
-          {{ VND(item?.price_guest) }}
-        </div>
-        <div class="flex ms-auto gap-2">
-          <UBadge color="green"  variant="subtle">Tài xế nhận</UBadge>
-          {{ VND(item?.price) }}
-        </div>
       </div>
     </UCard>
   </div>
@@ -121,6 +114,7 @@ const toast = useToast()
 const { parameters, bodyFilter } = useFilter();
 const orderService = new OrderService();
 const loading = ref(true);
+const loadingNhanDon = ref('');
 const listOrder = ref<Partial<{ pagination: Pagination, data: Booking[] }>>()
 
 const columns = [{
@@ -167,6 +161,7 @@ async function ListOrder(parameters: Partial<Pagination>, bodyFilter: Partial<Bo
 }
 
 async function acceptAsync(id: string) {
+  loadingNhanDon.value = id
   try {
     await orderService.acceptAsync(id)
     toast.add({
@@ -182,6 +177,8 @@ async function acceptAsync(id: string) {
       color: 'red',
       icon: 'i-tdesign-notification-error'
     })
+  } finally {
+    loadingNhanDon.value = ''
   }
 }
 </script>

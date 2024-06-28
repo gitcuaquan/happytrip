@@ -10,7 +10,6 @@ const user = useUser();
 const thisRole = ref(user.value.tokenType.toLowerCase())
 watch(() => route.fullPath, () => {
   isOpen.value = false
-
 });
 
 const menu1 = [
