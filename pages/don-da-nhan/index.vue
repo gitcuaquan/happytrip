@@ -162,12 +162,9 @@ async function onChangeFilter(value: BodyFilter) {
       <div class="flex gap-2 mb-3">
         <div class="flex flex-col gap-1">
           <div class="flex items-center font-semibold gap-2">
-            <UIcon name="i-mdi-user" />
             {{ item?.customer?.full_name }}
           </div>
-
           <a :href="`tel:${item?.customer?.phone}`" class=" flex  items-center gap-2">
-            <UIcon name="i-mdi-cellphone" />
             {{ item?.customer?.phone }}
           </a>
         </div>
@@ -176,45 +173,62 @@ async function onChangeFilter(value: BodyFilter) {
 
           <div class="flex  ms-auto gap-2">
             {{ VND(item?.price_guest) }}
-            <UBadge color="cyan" :ui="{base:'block w-20 text-center text-nowrap'}" variant="subtle">Tài xế thu</UBadge>
+            <UBadge color="cyan" :ui="{ base: 'block w-20 text-center text-nowrap' }" variant="subtle">Tài xế thu
+            </UBadge>
           </div>
           <div class="flex  ms-auto gap-2">
             {{ VND(item?.price) }}
-            <UBadge color="amber" :ui="{base:'block w-20 text-center text-nowrap'}" variant="subtle">Tài xế nhận</UBadge>
+            <UBadge color="amber" :ui="{ base: 'block w-20 text-center text-nowrap' }" variant="subtle">Tài xế nhận
+            </UBadge>
           </div>
         </div>
       </div>
-      <div class="flex shadow flex-col rounded text-slate font-bold  p-2 gap-2 my-3">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-hugeicons-car-04" class="text-2xl" />
-          {{ item.name_service }}
-          <UBadge color="green" variant="subtle">
-            Đã nhận
-          </UBadge>
-        </div>
-        <div class="flex items-center gap-1">
-          <UIcon name="i-mdi-calendar" />
-          {{ convertUTCToLocal(item?.date_of_destination) }}
-        </div>
-      </div>
+      <!-- Dịch vụ -->
       <div class="flex items-center gap-2">
-        <UIcon name="i-wpf-geo-fence" class="text-red-500" />
+        <div class="p-1  bg-primary-100 rounded border border-primary">
+          <UIcon name="i-hugeicons-car-02" class="text-2xl text-primary" />
+        </div>
+        <div class="font-bold">{{ item.name_service }}</div>
+        <UBadge color="green" variant="subtle">
+          Đã nhận
+        </UBadge>
+      </div>
+      <!-- Giở khởi hành -->
+      <div class="flex items-center mt-1 gap-1">
+        <div class="p-1  bg-gray-100 rounded border border-gray">
+          <UIcon name="i-mdi-calendar" class="text-2xl text-gray" />
+        </div>
+        {{ convertUTCToLocal(item?.date_of_destination) }}
+      </div>
+      <!-- Địa chi đón -->
+      <div class="flex mt-1 items-center gap-2">
+        <div class="py-1 px-2 my-auto border border-green-500 rounded bg-green-100">
+          <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md" />
+        </div>
         {{ Object.values(item?.departure)?.join(" - ") }}
       </div>
-      <div class="flex items-start gap-2 my-2">
-        <UIcon name="i-wpf-geo-fence" class="text-green-500" />
+      <!-- Địa chi trả -->
+      <div class="flex items-start gap-2 mt-1">
+        <div class="py-1 px-2 my-auto border border-red-500 rounded bg-red-100">
+          <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md" />
+        </div>
         {{ Object.values(item?.destination)?.join(" - ") }}
       </div>
-      <div class="flex items-center my-2  font-semibold gap-2" v-if="item?.note">
-        <UIcon name="i-hugeicons-note-03" class="text-indigo-400" />
+      <!-- Note -->
+      <div class="flex items-center mt-1  font-semibold gap-2" v-if="item?.note">
+        <div class="py-1 px-2 border border-indigo-500 rounded bg-indigo-100">
+          <UIcon name="i-hugeicons-note-03" class="text-indigo-500 text-md" />
+        </div>
         "{{ item?.note }}"
       </div>
-      <div class="flex items-center gap-2 justify-center">
-
+      <div class="flex items-center mt-2  gap-2 justify-center">
         <UButton icon="i-mdi-car-arrow-left" color="green">
           Hoàn thành
         </UButton>
-        <UButton icon="i-mdi-car-arrow-right" color="red" variant="soft">
+        <UButton @click="() => {
+          isOpenModalCanel = true;
+          orderCancel = item
+        }" icon="i-mdi-car-arrow-right" color="red" variant="soft">
           Hủy chuyến
         </UButton>
       </div>
@@ -244,7 +258,7 @@ async function onChangeFilter(value: BodyFilter) {
         :options="[{ value: 'partner', label: 'Tài xế hủy chuyến' }, { value: 'customer', label: 'Khách hàng hủy chuyến' }]" />
       <template #footer>
         <div class="flex">
-          <UButton class="mx-auto" color="red">
+          <UButton :disabled="!orderCancelUser" class="mx-auto" color="red">
             Xác nhận hủy
           </UButton>
         </div>

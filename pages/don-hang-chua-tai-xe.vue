@@ -48,6 +48,7 @@
     </template>
   </UTable>
   <div class="block mt-2 md:hidden">
+    <LoadingMobile v-if="loading" />
     <UCard v-for="item in listOrder?.data" class="mb-3">
       <div class="flex items-start">
         <div class="flex flex-col gap-2">
