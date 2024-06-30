@@ -1,13 +1,13 @@
+
 <template>
   <div class="p-4 flex h-screen bg-primary-50 rounded items-center justify-center">
     <div class="flex flex-col ">
-      <UIcon name="i-eos-icons-loading" class="text-3xl mx-auto" />
-        Đang tải ...
+      <UIcon name="i-ep-data-line" class="text-3xl mx-auto" />
+        Không có dữ liệu
     </div>
   </div>
 </template>
-<script lang="ts" setup>
 
-</script>
+<style scoped>
 
-<style></style>
+</style>

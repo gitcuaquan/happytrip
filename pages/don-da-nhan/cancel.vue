@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { type Booking, OrderService } from "~/services/OrderService";
-import type { BodyFilter, Pagination } from "~/model/FilterModal";
+import {type Booking, OrderService} from "~/services/OrderService";
+import type {BodyFilter, Pagination} from "~/model/FilterModal";
 
-const { parameters, bodyFilter } = useFilter();
+const {parameters, bodyFilter} = useFilter();
 const user = useUser();
 
 const orderService = new OrderService();
@@ -39,18 +39,13 @@ const columns = [
     label: 'Dịch vụ'
   },
   {
-    key: 'name_service',
+    key: 'type_name',
     label: 'Đối tượng hủy'
   },
   {
     key: 'status',
     label: 'Trạng thái'
-  },
-  {
-    key: 'action',
-    label: "Hành động"
   }
-
 ]
 //  khởi tạo filter
 initFilter()
@@ -74,14 +69,20 @@ async function ListOrder(parameters: Partial<Pagination>, bodyFilter: Partial<Bo
 async function onChangeFilter(value: BodyFilter) {
   parameters.page = 1
   loading.value = true
-  await ListOrder(parameters, value)
+  mapObject(value)
+  await ListOrder(parameters, bodyFilter)
   loading.value = false
+}
+function mapObject(value: BodyFilter){
+  for (const [key, _value] of Object.entries(value)) {
+    bodyFilter[key] = _value
+  }
 }
 </script>
 
 <template>
   <div class="sticky top-[60px] md:top-[55px] bg-white z-20">
-    <Filter></Filter>
+     <Filter @change="onChangeFilter"></Filter>
   </div>
   <UTable :loading="loading" class="hidden md:block" :columns="columns" :rows="listOrder?.data">
     <template #customer-data="{ row }">
@@ -100,13 +101,13 @@ async function onChangeFilter(value: BodyFilter) {
     <template #departure-data="{ row }">
       <div class="flex flex-col">
         <a class="flex hover:text-primary items-center gap-2" target="_blank"
-          :href="`https://www.google.com/maps/search/${Object.values(row?.departure)?.join('-')}`">
-          <UIcon name="i-wpf-geo-fence" class="text-green-500" />
+           :href="`https://www.google.com/maps/search/${Object.values(row?.departure)?.join('-')}`">
+          <UIcon name="i-wpf-geo-fence" class="text-green-500"/>
           {{ Object.values(row?.departure)?.join(" - ") }}
         </a>
         <a class="flex hover:text-primary items-center gap-2" target="_blank"
-          :href="`https://www.google.com/maps/search/${Object.values(row?.destination)?.join('-')}`">
-          <UIcon name="i-wpf-geo-fence" class="text-red-500" />
+           :href="`https://www.google.com/maps/search/${Object.values(row?.destination)?.join('-')}`">
+          <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
           {{ Object.values(row?.destination)?.join(" - ") }}
         </a>
       </div>
@@ -114,19 +115,18 @@ async function onChangeFilter(value: BodyFilter) {
     <template #date_of_destination-data="{ row }">
       {{ convertUTCToLocal(row?.date_of_destination) }}
     </template>
-    <template #price_sys-data="{ row }">
-
-      {{ VND(row?.price_guest) }}
-    </template>
     <template #status-data="{ row }">
       <UBadge color="red" variant="subtle">
         Đã Hủy
       </UBadge>
     </template>
+    <template #type_name-data="{row}">
+      {{ row.type_value }}
+    </template>
     <template #action-data="{ row }">
       <div class="text-right">
         <UDropdown :items="items(row)">
-          <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid"/>
         </UDropdown>
       </div>
     </template>
@@ -137,64 +137,70 @@ async function onChangeFilter(value: BodyFilter) {
     </template>
   </UTable>
   <div class="block mt-2 md:hidden">
-    <UCard :ui="{ ring: '', shadow: 'shadow-md' }" v-for="item in listOrder?.data" class="mb-3">
-      <div class="flex gap-2 mb-3">
-        <div class="flex flex-col gap-1">
-          <div class="flex items-center font-semibold gap-2">
-            <UIcon name="i-mdi-user" /> {{ item?.customer?.full_name }}
+    <LoadingMobile v-if="loading"/>
+    <template v-else>
+      <UCard :ui="{ ring: '', shadow: 'shadow-md' }" v-for="item in listOrder?.data" class="mb-3">
+        <div class="flex gap-2 mb-3">
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center font-semibold gap-2">
+              {{ item?.customer?.full_name }}
+            </div>
+            <a :href="`tel:${item?.customer?.phone}`" class=" flex  items-center gap-2">
+              {{ item?.customer?.phone }}
+            </a>
           </div>
-
-          <a :href="`tel:${item?.customer?.phone}`" class=" flex  items-center gap-2">
-            <UIcon name="i-mdi-cellphone" /> {{ item?.customer?.phone }}
-          </a>
-        </div>
-        <UDivider orientation="vertical" class="mx-auto" />
-        <div class="flex flex-col  gap-1">
-
-          <div class="flex text-primary font-bold ms-auto gap-2">
-            {{ VND(item?.price_guest) }}
-            <UBadge color="sky" variant="subtle">Tài xế thu</UBadge>
-          </div>
-          <div class="flex font-bold items-center gap-1">
-            {{ convertUTCToLocal(item?.date_of_destination) }}
-            <UIcon name="i-mdi-calendar" />
+          <UDivider orientation="vertical" class="mx-auto"/>
+          <div class="flex flex-col  gap-1">
+            Đối tượng hủy
+            <UBadge class="ms-auto" :ui="{ base: 'block w-20 text-center text-nowrap' }"  color="cyan" variant="subtle">
+              {{ item.type_value }}
+            </UBadge>
           </div>
         </div>
-      </div>
-      <div class="flex border rounded justify-center text-slate font-bold items-center p-2 gap-2 my-3">
-        <UIcon name="i-hugeicons-car-04" class="text-xl" />
-        {{ item.name_service }}
-        <UBadge color="red" variant="subtle">
-          Đã hủy
-        </UBadge>
-      </div>
-      <div class="flex items-center gap-2">
-        <UIcon name="i-wpf-geo-fence" class="text-red-500" />
-        {{ Object.values(item?.departure)?.join(" - ") }}
-      </div>
-      <div class="flex items-start gap-2 my-2">
-        <UIcon name="i-wpf-geo-fence" class="text-green-500" />
-        {{ Object.values(item?.destination)?.join(" - ") }}
-      </div>
-      <div class="flex items-center my-2  font-semibold gap-2" v-if="item?.note">
-        <UIcon name="i-hugeicons-note-03" class="text-indigo-400" />
-        "{{ item?.note }}"
-      </div>
-      <div class="flex items-center gap-2 justify-center">
-      
-          <UButton icon="i-mdi-car-arrow-left" color="green" >
-            Hoàn thành
-          </UButton>
-          <UButton icon="i-mdi-car-arrow-right" color="red" variant="soft">
-            Hủy chuyến
-          </UButton>
-       
-      </div>
-    </UCard>
+        <!-- Dịch vụ -->
+        <div class="flex items-center gap-2">
+          <div class="p-2 bg-primary-100 flex items-center justify-center rounded">
+            <UIcon name="i-ion-car-sport-sharp" class="text-primary text-md"/>
+          </div>
+          <div class="font-bold">{{ item.name_service }}</div>
+          <UBadge color="red" variant="subtle">
+            Đã Hủy
+          </UBadge>
+        </div>
+        <!-- Giở khởi hành -->
+        <div class="flex items-center mt-1 gap-1">
+          <div class="p-2 bg-cyan-100 flex items-center justify-center rounded">
+            <UIcon name="i-mdi-calendar" class="text-cyan-600 text-md"/>
+          </div>
+          {{ convertUTCToLocal(item?.date_of_destination) }}
+        </div>
+        <!-- Địa chi đón -->
+        <div class="flex mt-1 items-center gap-2">
+          <div class="p-2 bg-green-100 flex items-center justify-center rounded">
+            <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md"/>
+          </div>
+          {{ Object.values(item?.departure)?.join(" - ") }}
+        </div>
+        <!-- Địa chi trả -->
+        <div class="flex items-start gap-2 mt-1">
+          <div class="p-2 bg-red-100 flex items-center justify-center rounded">
+            <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md"/>
+          </div>
+          {{ Object.values(item?.destination)?.join(" - ") }}
+        </div>
+        <!-- Note -->
+        <div class="flex items-center mt-1  font-semibold gap-2" v-if="item?.note">
+          <div class="py-1 px-2 rounded bg-indigo-100">
+            <UIcon name="i-hugeicons-note-03" class="text-indigo-500 text-md"/>
+          </div>
+          "{{ item?.note }}"
+        </div>
+      </UCard>
+    </template>
   </div>
   <div class="flex">
     <UPagination :disabled="loading" :page-count="10" v-model="parameters.page" class="mt-5 ms-auto me-10"
-      :total="listOrder?.pagination?.count ?? 1" />
+                 :total="listOrder?.pagination?.count ?? 1"/>
   </div>
 </template>
 

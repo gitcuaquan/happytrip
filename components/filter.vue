@@ -60,8 +60,8 @@
   <UModal v-model="isOpen">
     <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
       <div class="min-h-96">
-        <UDivider label="Điểm đón" class="mb-3"/>
-        <div class="flex justify-between mb-3">
+        <UDivider label="Điểm đón" class="mb-2"/>
+        <div class="flex justify-between mb-2">
           <USelectMenu class="mb-3 " v-model="city.don" :ui="{ base: 'w-40' }"
                        :ui-menu="{ width: 'w-40' }"
                        :options="listCity" placeholder="Thành phố" value-attribute="id" option-attribute="name"/>
@@ -71,8 +71,8 @@
                        :options="listDistrictDiemDon?.districts ?? []" placeholder="Quận huyện" value-attribute="name"
                        option-attribute="name"/>
         </div>
-        <UDivider label="Điểm trả" class="mb-3"/>
-        <div class="flex justify-between mb-3">
+        <UDivider label="Điểm trả" class="mb-2"/>
+        <div class="flex justify-between mb-2">
           <USelectMenu v-model="city.tra" :ui="{ base: 'w-40' }" :ui-menu="{ width: 'w-40' }"
                        :options="listCity"
                        placeholder="Thành phố" value-attribute="id" option-attribute="name"/>
@@ -84,6 +84,11 @@
         <div class="flex justify-center">
           <DatePicker v-model="selected"/>
         </div>
+        <div class="text-center">
+          <UButton @click="isOpen = false"  variant="soft" class="mx-auto">
+            Xác nhận
+          </UButton>
+        </div>
       </div>
     </UCard>
   </UModal>
@@ -93,6 +98,7 @@
 import {CityService, type City, type CityDetails} from '~/services/CityService';
 import {sub, format, isSameDay, type Duration} from 'date-fns'
 import vi from 'date-fns/locale/vi'
+import type {BodyFilter} from "~/model/FilterModal";
 
 
 const emitter = defineEmits(['change'])
@@ -109,15 +115,8 @@ const city = reactive({
   don: "",
   tra: ""
 })
-const objectEmitter = reactive({
-  city_diemden: "",
-  city_diemdon: '',
-  district_depature: '',
-  district_destination: '',
+const objectEmitter = reactive<Partial<BodyFilter>>({
   from_date_of_destination: format(new Date(), 'yyyy-MM-dd'),
-  id: '',
-  keyword: "",
-  order_expired: true,
   to_date_of_destination: format(sub(new Date(), {days: -7}), 'yyyy-MM-dd')
 })
 const selected = ref({start: new Date(), end: sub(new Date(), {days: -7})})

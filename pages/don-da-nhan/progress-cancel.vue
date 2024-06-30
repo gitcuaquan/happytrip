@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { type Booking, OrderService } from "~/services/OrderService";
-import type { BodyFilter, Pagination } from "~/model/FilterModal";
+import {type Booking, OrderService} from "~/services/OrderService";
+import type {BodyFilter, Pagination} from "~/model/FilterModal";
 
-const { parameters, bodyFilter } = useFilter();
+const {parameters, bodyFilter} = useFilter();
 const user = useUser();
 
 const orderService = new OrderService();
@@ -38,18 +38,13 @@ const columns = [
     key: 'name_service',
     label: 'Dịch vụ'
   },
-
   {
-    key: 'departure',
-    label: 'Điểm đón - Điểm trả'
+    key: 'type_name',
+    label: 'Đối tượng hủy'
   },
   {
     key: 'status',
     label: 'Trạng thái'
-  },
-  {
-    key: 'price_sys',
-    label: "Cước thu"
   }
 ]
 //  khởi tạo filter
@@ -62,13 +57,13 @@ watchEffect(async () => {
 })
 
 function initFilter() {
-  bodyFilter.partner_id = user.value.id
-  bodyFilter.order_status = 2
-  bodyFilter.have_partner = true
+  bodyFilter.order_cancel_type = "khách hàng"
+  bodyFilter.order_status_value = "Chờ duyệt"
+  parameters.fields = 'id,short_id,order_short_id,order_id,type_value,customer,status_value,departure,destination,name_service,date_of_destination'
 }
 
 async function ListOrder(parameters: Partial<Pagination>, bodyFilter: Partial<BodyFilter>) {
-  listOrder.value = await orderService.getOrders(parameters, bodyFilter)
+  listOrder.value = await orderService.getOrdersCancelProgressAsync(parameters, bodyFilter)
 }
 
 async function onChangeFilter(value: BodyFilter) {
@@ -106,13 +101,13 @@ function mapObject(value: BodyFilter){
     <template #departure-data="{ row }">
       <div class="flex flex-col">
         <a class="flex hover:text-primary items-center gap-2" target="_blank"
-          :href="`https://www.google.com/maps/search/${Object.values(row?.departure)?.join('-')}`">
-          <UIcon name="i-wpf-geo-fence" class="text-green-500" />
+           :href="`https://www.google.com/maps/search/${Object.values(row?.departure)?.join('-')}`">
+          <UIcon name="i-wpf-geo-fence" class="text-green-500"/>
           {{ Object.values(row?.departure)?.join(" - ") }}
         </a>
         <a class="flex hover:text-primary items-center gap-2" target="_blank"
-          :href="`https://www.google.com/maps/search/${Object.values(row?.destination)?.join('-')}`">
-          <UIcon name="i-wpf-geo-fence" class="text-red-500" />
+           :href="`https://www.google.com/maps/search/${Object.values(row?.destination)?.join('-')}`">
+          <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
           {{ Object.values(row?.destination)?.join(" - ") }}
         </a>
       </div>
@@ -120,28 +115,23 @@ function mapObject(value: BodyFilter){
     <template #date_of_destination-data="{ row }">
       {{ convertUTCToLocal(row?.date_of_destination) }}
     </template>
-    <template #price_sys-data="{ row }">
-      <div class="flex flex-col gap-1">
-        <div class="flex gap-2">
-          <UBadge color="sky" class="w-20 text-nowrap" variant="subtle">Tài xế thu</UBadge>
-          {{ VND(row?.price_guest) }}
-        </div>
-        <div class="flex gap-2">
-          <UBadge color="green" class="w-20 text-nowrap" variant="subtle">Tài xế nhận</UBadge>
-          {{ VND(row?.price) }}
-        </div>
-      </div>
-    </template>
     <template #status-data="{ row }">
-      <UBadge color="emerald" variant="subtle">
-       Hoàn Thành
-      </UBadge>
+       <UBadge color="yellow" variant="subtle">
+         Yêu Cầu Hủy
+       </UBadge>
+      <br>
+       <UBadge class="mt-1" variant="subtle">
+         Admin Đang Xác Minh
+       </UBadge>
+
+    </template>
+    <template #type_name-data="{row}">
+      {{ row.type_value }}
     </template>
   </UTable>
   <div class="block mt-2 md:hidden">
     <LoadingMobile v-if="loading"/>
     <template v-else>
-      <EmptyDataMobile v-if="!listOrder?.data?.length"/>
       <UCard :ui="{ ring: '', shadow: 'shadow-md' }" v-for="item in listOrder?.data" class="mb-3">
         <div class="flex gap-2 mb-3">
           <div class="flex flex-col gap-1">
@@ -154,16 +144,9 @@ function mapObject(value: BodyFilter){
           </div>
           <UDivider orientation="vertical" class="mx-auto"/>
           <div class="flex flex-col  gap-1">
-            <div class="flex  ms-auto gap-2">
-              {{ VND(item?.price_guest) }}
-              <UBadge color="cyan" :ui="{ base: 'block w-20 text-center text-nowrap' }" variant="subtle">Tài xế thu
-              </UBadge>
-            </div>
-            <div class="flex  ms-auto gap-2">
-              {{ VND(item?.price) }}
-              <UBadge color="amber" :ui="{ base: 'block w-20 text-center text-nowrap' }" variant="subtle">Tài xế nhận
-              </UBadge>
-            </div>
+            <UBadge  :ui="{ base: 'block text-center text-nowrap' }" variant="subtle">
+              Admin Đang Xác Minh
+            </UBadge>
           </div>
         </div>
         <!-- Dịch vụ -->
@@ -172,8 +155,8 @@ function mapObject(value: BodyFilter){
             <UIcon name="i-ion-car-sport-sharp" class="text-primary text-md"/>
           </div>
           <div class="font-bold">{{ item.name_service }}</div>
-          <UBadge color="green" variant="subtle">
-            Hoàn Thành
+          <UBadge color="yellow" :ui="{ base: 'block w-20 text-center text-nowrap' }" variant="subtle">
+            Yêu Cầu Hủy
           </UBadge>
         </div>
         <!-- Giở khởi hành -->
@@ -207,9 +190,9 @@ function mapObject(value: BodyFilter){
       </UCard>
     </template>
   </div>
-  <div class="flex" v-if="listOrder?.data?.length">
+  <div class="flex">
     <UPagination :disabled="loading" :page-count="10" v-model="parameters.page" class="mt-5 ms-auto me-10"
-      :total="listOrder?.pagination?.count ?? 1" />
+                 :total="listOrder?.pagination?.count ?? 1"/>
   </div>
 </template>
 

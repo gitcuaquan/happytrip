@@ -49,57 +49,59 @@
   </UTable>
   <div class="block mt-2 md:hidden">
     <LoadingMobile v-if="loading" />
-    <UCard v-for="item in listOrder?.data" class="mb-3">
-      <div class="flex items-start">
-        <div class="flex flex-col gap-2">
-          <div class="flex font-bold gap-2">
-            <UBadge color="cyan" class="w-20 text-nowrap" variant="subtle">Tài xế thu</UBadge>
-            {{ VND(item?.price_guest) }}
+    <template v-else>
+      <UCard  v-for="item in listOrder?.data" class="mb-3">
+        <div class="flex items-start">
+          <div class="flex flex-col gap-2">
+            <div class="flex font-bold gap-2">
+              <UBadge color="cyan" class="w-20 text-nowrap" variant="subtle">Tài xế thu</UBadge>
+              {{ VND(item?.price_guest) }}
+            </div>
+            <div class="flex font-bold  gap-2">
+              <UBadge color="amber" class="w-20 text-nowrap" variant="subtle">Tài xế nhận</UBadge>
+              {{ VND(item?.price) }}
+            </div>
           </div>
-          <div class="flex font-bold  gap-2">
-            <UBadge color="amber" class="w-20 text-nowrap" variant="subtle">Tài xế nhận</UBadge>
-            {{ VND(item?.price) }}
-          </div>
-        </div>
-        <div class="ms-auto">
-          <UButton icon="i-mdi-car-arrow-left" :loading="loadingNhanDon == item.id" @click="acceptAsync(item?.id)"
-            class="ms-auto">Nhận chuyến</UButton>
-        </div>
-      </div>
-      <div class="flex items-center mt-1 gap-2">
-        <div class="p-2 border bg-primary-100 border-primary flex items-center justify-center rounded">
-          <UIcon name="i-ion-car-sport-sharp" class="text-primary text-md" />
-        </div>
-        <div class="flex flex-col">
-          <div class="font-bold text-gray-600">
-            {{ item.name_service }}
-          </div>
-          <div>
-            {{ convertUTCToLocal(item?.date_of_destination) }}
+          <div class="ms-auto">
+            <UButton icon="i-mdi-car-arrow-left" :loading="loadingNhanDon == item.id" @click="acceptAsync(item?.id)"
+                     class="ms-auto">Nhận chuyến</UButton>
           </div>
         </div>
-      </div>
-      <a target="_blank" :href="`https://www.google.com/maps/search/${[item?.departure.address_1, item?.departure.district, item?.departure.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
-        <div class="py-1 px-2 my-auto border border-green-500 rounded bg-green-100">
-          <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md" />
+        <div class="flex items-center mt-1 gap-2">
+          <div class="p-2 bg-primary-100 flex items-center justify-center rounded">
+            <UIcon name="i-ion-car-sport-sharp" class="text-primary text-md"/>
+          </div>
+          <div class="font-bold">{{ item.name_service }}</div>
         </div>
-        <div>
-          {{ [item?.departure.address_1, item?.departure.district, item?.departure.city]?.join(" - ") }}
+        <!-- Giở khởi hành -->
+        <div class="flex items-center mt-1 gap-1">
+          <div class="p-2 bg-cyan-100 flex items-center justify-center rounded">
+            <UIcon name="i-mdi-calendar" class="text-cyan-600 text-md"/>
+          </div>
+          {{ convertUTCToLocal(item?.date_of_destination) }}
         </div>
-      </a>
-      <a target="_blank":href="`https://www.google.com/maps/search/${[item?.destination.address_1, item?.destination.district, item?.destination.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
-        <div class="py-1 px-2 my-auto border border-red-500 rounded bg-red-100">
-          <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md" />
+        <a target="_blank" :href="`https://www.google.com/maps/search/${[item?.departure.address_1, item?.departure.district, item?.departure.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
+          <div class="py-1 px-2 my-auto rounded bg-green-100">
+            <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md" />
+          </div>
+          <div class="leading-4">
+            {{ [item?.departure.address_1, item?.departure.district, item?.departure.city]?.join(" - ") }}
+          </div>
+        </a>
+        <a target="_blank":href="`https://www.google.com/maps/search/${[item?.destination.address_1, item?.destination.district, item?.destination.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
+          <div class="py-1 px-2 my-auto rounded bg-red-100">
+            <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md" />
+          </div>
+          {{ [item?.destination.address_1, item?.destination.district, item?.destination.city]?.join(" - ") }}
+        </a>
+        <div class="flex mt-1 items-center gap-2" v-if="item?.note">
+          <div class="py-1 px-2 rounded bg-indigo-100">
+            <UIcon name="i-hugeicons-note-03" class="text-indigo-500 text-md" />
+          </div>
+          "{{ item?.note }}"
         </div>
-        {{ [item?.destination.address_1, item?.destination.district, item?.destination.city]?.join(" - ") }}
-      </a>
-      <div class="flex mt-1 items-center gap-2" v-if="item?.note">
-        <div class="py-1 px-2 border border-indigo-500 rounded bg-indigo-100">
-          <UIcon name="i-hugeicons-note-03" class="text-indigo-500 text-md" />
-        </div>
-        "{{ item?.note }}"
-      </div>
-    </UCard>
+      </UCard>
+    </template>
   </div>
   <div class="flex">
     <UPagination :disabled="loading" :page-count="10" v-model="parameters.page" class="mt-5 ms-auto me-10"
@@ -152,7 +154,8 @@ watchEffect(async () => {
 async function onChangeFilter(value: BodyFilter) {
   parameters.page = 1
   loading.value = true
-  await ListOrder(parameters, value)
+  mapObject(value)
+  await ListOrder(parameters, bodyFilter)
   loading.value = false
 }
 
@@ -180,6 +183,11 @@ async function acceptAsync(id: string) {
     })
   } finally {
     loadingNhanDon.value = ''
+  }
+}
+function mapObject(value: BodyFilter){
+  for (const [key, _value] of Object.entries(value)) {
+    bodyFilter[key] = _value
   }
 }
 </script>

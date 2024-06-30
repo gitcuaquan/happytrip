@@ -5,6 +5,7 @@ export interface Parameters {
     fields:string
 }
 export interface BodyFilter {
+    [key: string]:any;
     keyword: string;
     short_id: string;
     id: string;
@@ -12,6 +13,8 @@ export interface BodyFilter {
     creator_ids: string[];
     ids: string[];
     have_partner: boolean;
+    order_status_value:string;
+    order_cancel_type :string;
     from_date_of_destination: string;
     to_date_of_destination: string;
     city_diemdon: string;
