@@ -10,22 +10,7 @@ export const useFilter = () => {
 
 
   const bodyFilter: Partial<BodyFilter> = reactive({
-    keyword: "",
-    short_id: "",
-    id: "",
-    creator_type: "",
-    creator_ids: [],
-    ids: [],
     from_date_of_destination: new Date().toISOString().slice(0, 10),
-    city_diemdon: "",
-    city_diemden: "",
-    order_status: 0,
-    partner_id: "",
-    transport_type: 0,
-    partner_creator_id: "",
-    district_depature: "",
-    district_destination: "",
-    partner_ids: [],
   })
 
 

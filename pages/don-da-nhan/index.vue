@@ -255,26 +255,20 @@ async function confirmCancel() {
           </UBadge>
         </div>
         <!-- Giở khởi hành -->
-        <div class="flex items-center mt-1 gap-1">
-          <div class="p-2 bg-cyan-100 flex items-center justify-center rounded">
-            <UIcon name="i-mdi-calendar" class="text-cyan-600 text-md"/>
+        <a target="_blank" :href="`https://www.google.com/maps/search/${[item?.departure.address_1, item?.departure.district, item?.departure.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
+          <div class="py-1 px-2 my-auto rounded bg-green-100">
+            <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md" />
           </div>
-          {{ convertUTCToLocal(item?.date_of_destination) }}
-        </div>
-        <!-- Địa chi đón -->
-        <div class="flex mt-1 items-center gap-2">
-          <div class="p-2 bg-green-100 flex items-center justify-center rounded">
-            <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md"/>
+          <div class="leading-4">
+            {{ [item?.departure.address_1, item?.departure.district, item?.departure.city]?.join(" - ") }}
           </div>
-          {{ Object.values(item?.departure)?.join(" - ") }}
-        </div>
-        <!-- Địa chi trả -->
-        <div class="flex items-start gap-2 mt-1">
-          <div class="p-2 bg-red-100 flex items-center justify-center rounded">
-            <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md"/>
+        </a>
+        <a target="_blank" :href="`https://www.google.com/maps/search/${[item?.destination.address_1, item?.destination.district, item?.destination.city]?.join('-')}`" class="flex items-center mt-1 gap-2">
+          <div class="py-1 px-2 my-auto rounded bg-red-100">
+            <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md" />
           </div>
-          {{ Object.values(item?.destination)?.join(" - ") }}
-        </div>
+          {{ [item?.destination.address_1, item?.destination.district, item?.destination.city]?.join(" - ") }}
+        </a>
         <!-- Note -->
         <div class="flex items-center mt-1  font-semibold gap-2" v-if="item?.note">
           <div class="py-1 px-2 rounded bg-indigo-100">
