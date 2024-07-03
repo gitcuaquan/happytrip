@@ -1,5 +1,5 @@
 import type { BodyFilter, Parameters } from "~/model/FilterModal"
-
+import { subMonths } from 'date-fns';
 export const useFilter = () => {
 
   const parameters: Partial<Parameters> = reactive({
@@ -10,7 +10,7 @@ export const useFilter = () => {
 
 
   const bodyFilter: Partial<BodyFilter> = reactive({
-    from_date_of_destination: new Date().toISOString().slice(0, 10),
+    from_date_of_destination: subMonths(new Date(),6)
   })
 
 

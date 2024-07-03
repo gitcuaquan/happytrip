@@ -15,8 +15,8 @@ export interface BodyFilter {
     have_partner: boolean;
     order_status_value:string;
     order_cancel_type :string;
-    from_date_of_destination: string;
-    to_date_of_destination: string;
+    from_date_of_destination: any;
+    to_date_of_destination: any;
     city_diemdon: string;
     city_diemden: string;
     order_status: number;

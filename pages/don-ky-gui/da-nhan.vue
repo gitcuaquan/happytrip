@@ -169,7 +169,7 @@ watchEffect(async () => {
 
 function initFilter() {
   bodyFilter.partner_creator_id = user.value.id
-  bodyFilter.order_status = 0
+  bodyFilter.order_status = 1
 }
 
 async function onChangeFilter(value: BodyFilter) {

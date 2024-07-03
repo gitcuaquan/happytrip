@@ -96,7 +96,7 @@
 
 <script lang="ts" setup>
 import {CityService, type City, type CityDetails} from '~/services/CityService';
-import {sub, format, isSameDay, type Duration} from 'date-fns'
+import {sub, format, isSameDay, type Duration, subMonths} from 'date-fns'
 import vi from 'date-fns/locale/vi'
 import type {BodyFilter} from "~/model/FilterModal";
 
@@ -119,7 +119,7 @@ const objectEmitter = reactive<Partial<BodyFilter>>({
   from_date_of_destination: format(new Date(), 'yyyy-MM-dd'),
   to_date_of_destination: format(sub(new Date(), {days: -7}), 'yyyy-MM-dd')
 })
-const selected = ref({start: new Date(), end: sub(new Date(), {days: -7})})
+const selected = ref({start: subMonths(new Date(),6), end: sub(new Date(), {days: -7})})
 const isOpen = ref(false)
 const {parameters, bodyFilter} = useFilter();
 

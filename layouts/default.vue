@@ -138,12 +138,19 @@ const menu = ref([
         to:'/don-ky-gui'
       },
       {
-        label: "Đã nhận đơn",
-        icon: "i-heroicons-clipboard"
+        label: "Đã nhận",
+        icon: "i-heroicons-clipboard",
+        to:'/don-ky-gui/da-nhan'
       },
       {
-        label: "Hủy chuyến",
-        icon: "i-heroicons-clipboard"
+        label: "Đã hoàn thành",
+        icon: "i-heroicons-clipboard",
+        to:'/don-ky-gui/hoan-thanh'
+      },
+      {
+        label: "Đã hủy",
+        icon: "i-heroicons-clipboard",
+        to:'/don-ky-gui/huy-chuyen'
       },
       {
         label: "Lệnh hủy chuyến",
