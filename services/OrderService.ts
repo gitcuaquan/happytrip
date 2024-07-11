@@ -1,4 +1,25 @@
-import type { BodyFilter, Pagination, Parameters } from "~/model/FilterModal"
+import type {BodyFilter, Pagination, Parameters} from "~/model/FilterModal"
+
+export interface IOrder {
+    id_order: string;
+    name_service: string;
+    id_service: string;
+    full_name: string;
+    phone: string;
+    date_of_destination: string;
+    quantity: number;
+    departure_city: string;
+    departure_dictrict: string;
+    departure_address_1: string;
+    destination_city: string;
+    destination_dictrict: string;
+    destination_address_1: string;
+    price: number;
+    price_guest: number;
+    price_system: number;
+    net_profit: number;
+    note: string;
+}
 
 export interface Booking {
     id: string;
@@ -43,15 +64,16 @@ export class OrderService {
         const token = useCookie('accessToken')
         this.token = `Bearer ${token.value}`
     }
-    async overviewAsync(){
+
+    async overviewAsync():Promise<IOrder> {
         return new Promise(async (resolve, reject) => {
             try {
-                const respone = await $fetch(`${BASE_URL}/order/overview-by-date`, {
+                const respone = await $fetch<IOrder>(`${BASE_URL}/order/overview-by-date`, {
                     method: "POST",
                     headers: {
                         Authorization: this.token
                     },
-                    body:{}
+                    body: {}
                 })
                 resolve(respone)
             } catch (e) {
@@ -59,6 +81,40 @@ export class OrderService {
             }
         })
     }
+
+    async createOrderDeposit(order:Partial<IOrder>):Promise<IOrder>{
+        return new Promise(async (resolve, reject) => {
+            try {
+                const respone = await $fetch<IOrder>(`${BASE_URL}/order/by-ajax`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: this.token
+                    },
+                    body: order
+                })
+                resolve(respone)
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
+    async previewOrderDeposit(order:Partial<IOrder>){
+        return new Promise(async (resolve, reject) => {
+            try {
+                const respone = await $fetch(`${BASE_URL}/order/calc-order`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: this.token
+                    },
+                    body: order
+                })
+                resolve(respone)
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
+
     async getOrders(parameters?: Partial<Parameters>, bodyFilter?: Partial<BodyFilter>) {
         const orders = await $fetch<{ pagination: Pagination, data: Booking[] }>(`${BASE_URL}/order/list`, {
             headers: {
@@ -85,6 +141,7 @@ export class OrderService {
         })
         return orders
     }
+
     async getOrdersCancelProgressAsync(parameters?: Partial<Parameters>, bodyFilter?: Partial<BodyFilter>) {
         const orders = await $fetch<{
             pagination: Pagination,
@@ -99,6 +156,7 @@ export class OrderService {
         })
         return orders
     }
+
     acceptAsync(id: string) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -130,7 +188,8 @@ export class OrderService {
             }
         })
     }
-    rejectAsync(id:string,type:'customer'|'partner'){
+
+    rejectAsync(id: string, type: 'customer' | 'partner') {
         return new Promise(async (resolve, reject) => {
             try {
                 const respone = await $fetch(`${BASE_URL}/order/${id}/${type == 'customer' ? 'customer_reject' : 'reject'}`, {
@@ -145,6 +204,7 @@ export class OrderService {
             }
         })
     }
+
     cancelAsync(id: string) {
         return new Promise(async (resolve, reject) => {
             try {

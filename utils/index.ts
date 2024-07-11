@@ -1,4 +1,4 @@
-export const BASE_URL = process.dev ?'https://localhost:7215/api':'https://sys.happytrip.vn/api'
+export const BASE_URL = 'https://sys.happytrip.vn/api'
 /**
  * Formats a number into a currency string using the 'vi-VN' locale and the 'VND' currency.
  *

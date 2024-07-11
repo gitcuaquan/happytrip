@@ -63,8 +63,8 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 const state = reactive({
-  phone: undefined,
-  password: undefined
+  phone: "0915807356",
+  password: '123456'
 })
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true

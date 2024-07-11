@@ -35,3 +35,8 @@ export interface Pagination {
     count: number,
     total_page: number
 }
+
+export  interface ResponseBase<T> {
+    data:T;
+    pagination: Pagination
+}

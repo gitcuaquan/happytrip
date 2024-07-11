@@ -2,6 +2,7 @@
   <div class="sticky top-[60px] md:top-[55px] bg-white z-20">
     <Filter @change="onChangeFilter"></Filter>
   </div>
+
   <UTable :loading="loading" class="hidden md:block" :columns="columns" :rows="listOrder?.data">
     <template #short_id-data="{ row }">
       <UBadge color="sky" variant="subtle">{{ row?.short_id }}</UBadge>

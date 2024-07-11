@@ -36,7 +36,7 @@
 
     <UDivider orientation="vertical" class="h-7 hidden sm:block"/>
     <UPopover class="hidden sm:block" :popper="{ placement: 'bottom-start' }">
-      <UButton icon="i-heroicons-calendar-days-20-solid">
+      <UButton  variant="outline" icon="i-heroicons-calendar-days-20-solid">
         {{ format(selected.start, 'd MMM, yyy', {locale: vi}) }} - {{
           format(selected.end, 'd MMM, yyy', {
             locale: vi
