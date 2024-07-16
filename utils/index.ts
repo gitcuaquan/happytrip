@@ -1,4 +1,5 @@
-export const BASE_URL = 'https://sys.happytrip.vn/api'
+export const BASE_URL =process.dev ? 'https://localhost:7215/api':  'https://sys.happytrip.vn/api'
+
 /**
  * Formats a number into a currency string using the 'vi-VN' locale and the 'VND' currency.
  *
@@ -15,7 +16,7 @@ export function VND(amount: number): string {
 
 export function convertUTCToLocal(utcString: string): string {
     const date = new Date(utcString);
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' };
+    const options = {year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'};
     //   @ts-ignore
     const formattedDate = date.toLocaleString('vi-VN', options);
     return formattedDate;
