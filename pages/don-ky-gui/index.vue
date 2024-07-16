@@ -1,5 +1,5 @@
 <template>
-  <ModalAddKiGui v-model="isOpenAdd"/>
+  <ModalAddKiGui v-model="isOpenAdd" @loading="ListOrder(parameters, bodyFilter)" />
   <div class="sticky top-[60px] md:top-[55px] bg-white z-20">
     <Filter @change="onChangeFilter"></Filter>
   </div>
@@ -11,7 +11,7 @@
       Đơn Hết Giá Trị
     </UButton>
     <UButton @click="isOpenAdd = true" size="xs" color="green" variant="outline" icon="i-hugeicons-note-add"
-             class="ms-auto">
+      class="ms-auto">
       Thêm Mới
     </UButton>
   </div>
@@ -22,17 +22,17 @@
     <template #departure-data="{ row }">
       <div class="flex flex-col">
         <a class="flex hover:text-primary items-center gap-2" target="_blank"
-           :href="`https://www.google.com/maps/search/${[row?.departure.address_1, row?.departure.district, row?.departure.city]?.join('-')}`">
-          <UIcon name="i-wpf-geo-fence" class="text-red-500"/>
+          :href="`https://www.google.com/maps/search/${[row?.departure.address_1, row?.departure.district, row?.departure.city]?.join('-')}`">
+          <UIcon name="i-wpf-geo-fence" class="text-red-500" />
           {{ [row?.departure.address_1, row?.departure.district, row?.departure.city]?.join(" - ") }}
         </a>
       </div>
       <div class="flex items-center gap-2">
-        <UIcon name="i-wpf-geo-fence" class="text-green-500"/>
+        <UIcon name="i-wpf-geo-fence" class="text-green-500" />
         {{ [row?.destination.address_1, row?.destination.district, row?.destination.city]?.join(" - ") }}
       </div>
       <div class="flex items-center font-semibold gap-2" v-if="row?.note">
-        <UIcon name="i-hugeicons-note-03" class="text-indigo-400"/>
+        <UIcon name="i-hugeicons-note-03" class="text-indigo-400" />
         "{{ row?.note }}"
       </div>
     </template>
@@ -54,7 +54,7 @@
         </div>
       </div>
     </template>
-    <template #net_profit-data=" {row}">
+    <template #net_profit-data="{ row }">
       {{ VND(row?.net_profit) }}
     </template>
     <template #action-data="{ row }">
@@ -63,7 +63,7 @@
     </template>
   </UTable>
   <div class="block mt-2 md:hidden">
-    <LoadingMobile v-if="loading"/>
+    <LoadingMobile v-if="loading" />
     <template v-else>
       <UCard v-for="item in listOrder?.data" class="mb-3">
         <div class="flex items-start">
@@ -79,7 +79,7 @@
           </div>
           <div class="ms-auto">
             <UButton icon="i-mdi-car-arrow-left" :loading="loadingNhanDon == item.id" @click="acceptAsync(item?.id)"
-                     class="ms-auto">Nhận chuyến
+              class="ms-auto">Nhận chuyến
             </UButton>
             <div class="flex font-bold mt-2  gap-2">
               <UBadge color="pink" class="text-nowrap" variant="subtle">Hoa Hồng</UBadge>
@@ -89,38 +89,38 @@
         </div>
         <div class="flex items-center mt-1 gap-2">
           <div class="p-2 bg-primary-100 flex items-center justify-center rounded">
-            <UIcon name="i-ion-car-sport-sharp" class="text-primary text-md"/>
+            <UIcon name="i-ion-car-sport-sharp" class="text-primary text-md" />
           </div>
           <div class="font-bold">{{ item.name_service }}</div>
         </div>
         <!-- Giở khởi hành -->
         <div class="flex items-center mt-1 gap-1">
           <div class="p-2 bg-cyan-100 flex items-center justify-center rounded">
-            <UIcon name="i-mdi-calendar" class="text-cyan-600 text-md"/>
+            <UIcon name="i-mdi-calendar" class="text-cyan-600 text-md" />
           </div>
           {{ convertUTCToLocal(item?.date_of_destination) }}
         </div>
         <a target="_blank"
-           :href="`https://www.google.com/maps/search/${[item?.departure.address_1, item?.departure.district, item?.departure.city]?.join('-')}`"
-           class="flex items-center mt-1 gap-2">
+          :href="`https://www.google.com/maps/search/${[item?.departure.address_1, item?.departure.district, item?.departure.city]?.join('-')}`"
+          class="flex items-center mt-1 gap-2">
           <div class="py-1 px-2 my-auto rounded bg-green-100">
-            <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md"/>
+            <UIcon name="i-wpf-geo-fence" class="text-green-500 text-md" />
           </div>
           <div class="leading-4">
             {{ [item?.departure.address_1, item?.departure.district, item?.departure.city]?.join(" - ") }}
           </div>
         </a>
         <a target="_blank"
-           :href="`https://www.google.com/maps/search/${[item?.destination.address_1, item?.destination.district, item?.destination.city]?.join('-')}`"
-           class="flex items-center mt-1 gap-2">
+          :href="`https://www.google.com/maps/search/${[item?.destination.address_1, item?.destination.district, item?.destination.city]?.join('-')}`"
+          class="flex items-center mt-1 gap-2">
           <div class="py-1 px-2 my-auto rounded bg-red-100">
-            <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md"/>
+            <UIcon name="i-wpf-geo-fence" class="text-red-500 text-md" />
           </div>
           {{ [item?.destination.address_1, item?.destination.district, item?.destination.city]?.join(" - ") }}
         </a>
         <div class="flex mt-1 items-center gap-2" v-if="item?.note">
           <div class="py-1 px-2 rounded bg-indigo-100">
-            <UIcon name="i-hugeicons-note-03" class="text-indigo-500 text-md"/>
+            <UIcon name="i-hugeicons-note-03" class="text-indigo-500 text-md" />
           </div>
           "{{ item?.note }}"
         </div>
@@ -129,38 +129,24 @@
   </div>
   <div class="flex">
     <UPagination :disabled="loading" :page-count="10" v-model="parameters.page" class="mt-5 ms-auto me-10"
-                 :total="listOrder?.pagination?.count ?? 1"/>
+      :total="listOrder?.pagination?.count ?? 1" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import type {BodyFilter, Pagination} from '~/model/FilterModal';
-import {OrderService, type Booking, type IOrder} from '~/services/OrderService';
-import {z} from 'zod'
-import type {FormSubmitEvent} from '#ui/types'
-import {HappyTripService} from "~/services/HappyTripService";
-import {format} from 'date-fns';
-import {CityService} from "~/services/CityService";
+import type { BodyFilter, Pagination } from '~/model/FilterModal';
+import { OrderService, type Booking } from '~/services/OrderService';
 
-const happytripService = new HappyTripService()
+
 const toast = useToast()
 const user = useUser();
-const {parameters, bodyFilter} = useFilter();
+const { parameters, bodyFilter } = useFilter();
 const orderService = new OrderService();
 const loading = ref(true);
 const loadingNhanDon = ref('');
 const listOrder = ref<Partial<{ pagination: Pagination, data: Booking[] }>>()
 const isOpenAdd = ref(false);
-var previewOrder = reactive<Partial<IOrder>>({})
-const timeout = ref();
-const data = reactive({
-  service: [],
-  city: [],
-  tempCity_1: "",
-  tempCity_2: "",
-  district1: [],
-  district2: [],
-})
+
 
 const columns = [
   {
@@ -206,37 +192,6 @@ watchEffect(async () => {
 })
 
 
-watchEffect(async () => {
-  if (data.tempCity_1) {
-    //@ts-ignore
-    state.departure_city = data.city.find(item => item.id == data.tempCity_1).name
-    //@ts-ignore
-    state.departure_dictrict = null
-    const a1 = await new CityService().getCityDetailAsync(data.tempCity_1)
-    //@ts-ignore
-    data.district1 = a1.districts.filter(item => item.status)
-  }
-  if (data.tempCity_2) {
-    //@ts-ignore
-    state.destination_city = data.city.find(item => item.id == data.tempCity_2).name
-    //@ts-ignore
-    state.destination_dictrict = null
-    const a2 = await new CityService().getCityDetailAsync(data.tempCity_2)
-    //@ts-ignore
-    data.district2 = a2.districts.filter(item => item.status)
-  }
-})
-
-
-function checkIsPreivew(object1: any, keys: string[]): boolean {
-  if (!object1.hasOwnProperty('id_service')) return false
-  for (const [key, value] of Object.entries(object1)) {
-    if (keys.includes(key) && (value === null || value === undefined || value == "")) {
-      return false;
-    }
-  }
-  return true;
-}
 
 function initFilter() {
   bodyFilter.partner_creator_id = user.value.id
@@ -282,11 +237,6 @@ function mapObject(value: BodyFilter) {
   for (const [key, _value] of Object.entries(value)) {
     bodyFilter[key] = _value
   }
-}
-
-async function onSubmit(event: FormSubmitEvent<Schema>) {
-  // Do something with data
-  console.log(event.data)
 }
 </script>
 
