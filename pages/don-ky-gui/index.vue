@@ -1,5 +1,5 @@
-<template>
-  <ModalAddKiGui v-model="isOpenAdd" @loading="ListOrder(parameters, bodyFilter)" />
+<template> 
+  <ModalAddKiGui v-model="isOpenAdd"  :data-update="dataUpdate" @loading="ListOrder(parameters, bodyFilter)" />
   <div class="sticky top-[60px] md:top-[55px] bg-white z-20">
     <Filter @change="onChangeFilter"></Filter>
   </div>
@@ -58,8 +58,9 @@
       {{ VND(row?.net_profit) }}
     </template>
     <template #action-data="{ row }">
-      <UButton icon="i-mdi-car-arrow-left" :loading="loadingNhanDon == row.id" @click="acceptAsync(row?.id)">Nhận chuyến
-      </UButton>
+      <UDropdown :items="items(row)">
+        <UButton color="gray" variant="outline" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+      </UDropdown>
     </template>
   </UTable>
   <div class="block mt-2 md:hidden">
@@ -134,6 +135,7 @@
 </template>
 
 <script lang="ts" setup>
+
 import type { BodyFilter, Pagination } from '~/model/FilterModal';
 import { OrderService, type Booking } from '~/services/OrderService';
 
@@ -146,7 +148,18 @@ const loading = ref(true);
 const loadingNhanDon = ref('');
 const listOrder = ref<Partial<{ pagination: Pagination, data: Booking[] }>>()
 const isOpenAdd = ref(false);
-
+const dataUpdate = ref({});
+const items = (row: any) => [
+  [{
+    label: 'Chỉnh sửa',
+    icon: 'i-heroicons-pencil-square-20-solid',
+    click: () => onUpdate(row.id)
+  }, {
+    label: 'Hủy chuyến',
+    icon: 'i-heroicons-trash-20-solid',
+    click: () => rejectOrder(row.id)
+  }]
+]
 
 const columns = [
   {
@@ -175,7 +188,7 @@ const columns = [
   },
   {
     key: 'action',
-    label: "Hành động"
+    label: ""
   }
 
 ]
@@ -183,6 +196,31 @@ const columns = [
 
 initFilter()
 
+
+async function rejectOrder(id: string) {
+  try {
+    const res = await orderService.rejectAsync(id, "customer")
+    toast.add({
+      title: "Hủy chuyến thành công",
+      color: 'green',
+      icon: 'i-mdi-success-circle-outline'
+    })
+    await ListOrder(parameters, bodyFilter)
+  } catch (e) {
+    toast.add({ title: "Hủy chuyến thất bại", color: "red", icon: "i-ic-round-error-outline" })
+    console.log(e);
+  }
+}
+
+async function onUpdate(id: string) {
+  try {
+    dataUpdate.value = await orderService.detailAsync(id)
+    isOpenAdd.value = true
+  } catch (e) {
+    console.log(e);
+
+  }
+}
 
 
 watchEffect(async () => {

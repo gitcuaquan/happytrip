@@ -220,4 +220,20 @@ export class OrderService {
             }
         })
     }
+
+    detailAsync(id: string) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const respone = await $fetch(`${BASE_URL}/order/${id}`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: this.token
+                    },
+                })
+                resolve(respone)
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
 }

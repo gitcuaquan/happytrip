@@ -49,17 +49,66 @@ const schema = z.object({
 })
 
 type Schema = z.output<typeof schema>
+watch(() => isOpenAdd.value, (value) => {
+  if (value == false) {
+    resetState()
+  }
+})
 
 const state = reactive<Partial<IOrder>>({})
 const loadingState = reactive({
   preview: false,
-  create:false
+  create: false
 })
+const props = defineProps({
+  dataUpdate: {
+    type: Object,
+  }
+})
+watch(() => props.dataUpdate, () => {
+  state.full_name = props.dataUpdate!.customer?.full_name
+  state.note = props.dataUpdate?.note
+  state.phone = props.dataUpdate!.customer.phone
+  state.date_of_destination = format(new Date(props.dataUpdate?.date_of_destination), "yyyy-MM-dd'T'HH:mm")
+  state.price = props.dataUpdate?.price
+  state.price_guest = props.dataUpdate?.price_guest
+  state.price_system = props.dataUpdate?.price_system
+  state.net_profit = props.dataUpdate?.net_profit
+  state.note = props.dataUpdate?.note
+  state.id_service = props.dataUpdate?.id_service
 
+  state.departure_city = data.city.find(item => item.name == props.dataUpdate?.departure.city).id
+  state.destination_city = data.city.find(item => item.name == props.dataUpdate?.destination.city).id
+
+  data.tempCity_1 = data.city.find(item => item.name == props.dataUpdate?.departure.city).id
+  data.tempCity_2 = data.city.find(item => item.name == props.dataUpdate?.destination.city).id
+
+  state.departure_dictrict = props.dataUpdate?.departure.district
+  state.destination_dictrict = props.dataUpdate?.destination.district
+
+  state.departure_address_1 = props.dataUpdate?.departure.address_1
+  state.destination_address_1 = props.dataUpdate?.destination.address_1
+})
 
 onMounted(async () => {
   initData()
 })
+function resetState() {
+  state.date_of_destination = format(new Date(), "yyyy-MM-dd'T'HH:mm")
+  console.log("🚀 ~ resetState ~  state.date_of_destination :",  state.date_of_destination )
+  state.price = 0
+  state.price_guest = 0
+  state.price_system = 0
+  state.net_profit = 0
+  state.note = ""
+  state.id_service = undefined
+  state.departure_city = undefined
+  state.destination_city = undefined
+  state.departure_dictrict = undefined
+  state.destination_dictrict = undefined
+  state.destination_address_1 = undefined
+  state.departure_address_1 = undefined
+}
 
 function onInputAction(e: Event, target: 'price_guest' | 'price') {
   if (target === 'price_guest') {
@@ -78,20 +127,24 @@ async function initData() {
   //@ts-ignore
   data.city = Array.from(_city).filter((item) => item.status)
   //@ts-ignore
-  data.tempCity_1 = data.city[0].id
-  //@ts-ignore
-  data.tempCity_2 = data.city[1].id
-  //@ts-ignore
   data.service = Array.from(_preData).map((item: any) => ({ id: item.id, name: item.name })) || []
-  //@ts-ignore
-  state.id_service = data.service[0].id
+  if (!props.dataUpdate?.id_service) {
+    //@ts-ignore
+    data.tempCity_1 = data.city[0].id
+    //@ts-ignore
+    data.tempCity_2 = data.city[1].id
+    //@ts-ignore
+    state.id_service = data.service[0].id
+  }
 }
 
 watch(() => data.tempCity_2, async () => {
   //@ts-ignore
   state.destination_city = data.city.find(item => item.id == data.tempCity_2).name
-  //@ts-ignore
-  state.destination_dictrict = null
+  if (!props.dataUpdate?.id_service) {
+    //@ts-ignore
+    state.destination_dictrict = null
+  }
   const a2 = await new CityService().getCityDetailAsync(data.tempCity_2)
   //@ts-ignore
   data.district2 = a2.districts.filter(item => item.status)
@@ -100,18 +153,25 @@ watch(() => data.tempCity_2, async () => {
 watch(() => data.tempCity_1, async () => {
   //@ts-ignore
   state.departure_city = data.city.find(item => item.id == data.tempCity_1).name
-  //@ts-ignore
-  state.departure_dictrict = null
+  if (!props.dataUpdate?.id_service) {
+    //@ts-ignore
+    state.departure_dictrict = null
+  }
   const a1 = await new CityService().getCityDetailAsync(data.tempCity_1)
   //@ts-ignore
   data.district1 = a1.districts.filter(item => item.status)
 })
-watch(() => [state.id_service, state.departure_city, state.destination_city, state.departure_dictrict, state.destination_dictrict], () => {
-  prviewOrder()
+watch(() => state.id_service, () => prviewOrder(true))
+watch(() => [state.departure_city, state.destination_city, state.departure_dictrict, state.destination_dictrict], () => {
+  prviewOrder(true)
 })
-async function prviewOrder() {
+async function prviewOrder(service?: boolean) {
   if (checkPreview()) {
-    const newObject = JSON.parse(JSON.stringify(state))
+    const newObject = JSON.parse(JSON.stringify(state)) as IOrder
+    if (service) {
+      newObject.price = 0
+      newObject.price_guest = 0
+    }
     try {
       loadingState.preview = true
       const res = await orderService.previewOrderDeposit(newObject)
@@ -143,14 +203,15 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     toast.add({
       title: "Tạo đơn thành công",
       //@ts-ignore
-      description:"Đơn đã được tạo có ID là: "+res.short_id,
+      description: "Đơn đã được tạo có ID là: " + res.short_id,
       color: 'green',
       icon: 'i-mdi-success-circle-outline'
     })
     emit("loading")
+    isOpenAdd.value = false
   } catch (e) {
     toast.add({ title: e.data, color: "red", icon: "i-ic-round-error-outline" })
-  }finally{
+  } finally {
     loadingState.create = false
   }
 }
